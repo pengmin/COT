@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{404D5139-3F8E-4FD3-9333-3E8EDD216763}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Cot.Repositories</RootNamespace>
+    <AssemblyName>Cot.Repositories</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CotDbContext.cs" />
+    <Compile Include="Migrations\201501251502456_ModifyPoItemModel.cs" />
+    <Compile Include="Migrations\201501251502456_ModifyPoItemModel.Designer.cs">
+      <DependentUpon>201501251502456_ModifyPoItemModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501261531147_resetModel.cs" />
+    <Compile Include="Migrations\201501261531147_resetModel.Designer.cs">
+      <DependentUpon>201501261531147_resetModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501271254573_ResetPoModel.cs" />
+    <Compile Include="Migrations\201501271254573_ResetPoModel.Designer.cs">
+      <DependentUpon>201501271254573_ResetPoModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501271306208_ResetPoModel2.cs" />
+    <Compile Include="Migrations\201501271306208_ResetPoModel2.Designer.cs">
+      <DependentUpon>201501271306208_ResetPoModel2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="UnitOfWork.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cot.Entities\Cot.Entities.csproj">
+      <Project>{78290043-CF98-41F2-8C16-10BFBB26703C}</Project>
+      <Name>Cot.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cot.Infrastructure\Cot.Infrastructure.csproj">
+      <Project>{FFB06A49-BDB7-4413-91E8-3A916AE338EA}</Project>
+      <Name>Cot.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cot.IRepositories\Cot.IRepositories.csproj">
+      <Project>{23251531-2EE8-408A-983F-A835750D66DA}</Project>
+      <Name>Cot.IRepositories</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201501251502456_ModifyPoItemModel.resx">
+      <DependentUpon>201501251502456_ModifyPoItemModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501261531147_resetModel.resx">
+      <DependentUpon>201501261531147_resetModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501271254573_ResetPoModel.resx">
+      <DependentUpon>201501271254573_ResetPoModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501271306208_ResetPoModel2.resx">
+      <DependentUpon>201501271306208_ResetPoModel2.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

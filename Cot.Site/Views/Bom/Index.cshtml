@@ -1,0 +1,41 @@
+﻿@model IQueryable<Cot.Entities.Bom>
+@{
+	ViewBag.Title = "物料清单";
+}
+<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+<table>
+	<thead>
+		<tr>
+			<th><a href="/bom/add">新增</a></th>
+			<th><a href="javascript:$('form').submit();">转生产工单</a></th>
+		</tr>
+	</thead>
+</table>
+<form action="/bom/toPo" method="POST">
+	<table>
+		<thead>
+			<tr>
+				<th>
+					<input type="checkbox" /></th>
+				<th>客户代码</th>
+				<th>品名</th>
+				<th>量产损耗</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			@{ var i = 0;}
+			@foreach (var item in Model)
+   {
+				<tr>
+					<td>
+						<input type="checkbox" name="id" value="@item.Id"/></td>
+					<td>@item.CustomerCode</td>
+					<td>@item.ProductName</td>
+					<td>@(item.ProductionLossRate * 100)%</td>
+					<td><a href="/bom/edit/@item.Id">编辑</a></td>
+				</tr>
+   }
+		</tbody>
+	</table>
+</form>

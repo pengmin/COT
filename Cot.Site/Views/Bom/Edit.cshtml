@@ -1,0 +1,102 @@
+﻿@using Cot.Entities
+@model Cot.Site.Models.BomModel
+@{
+	ViewBag.Title = "Edit";
+}
+<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+@using (Html.BeginForm())
+{
+	<input type="hidden" value="@Model.Id" name="Bom.Id"/>
+	<table>
+		<thead>
+			<tr>
+				<th colspan="8">BOM表</th>
+			</tr>
+			<tr>
+				<th><a href="/bom/index">返回列表</a></th>
+				<th colspan="7"><a href="javascript:$('form').submit();">保存</a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>@Html.LabelFor(_ => _.CustomerCode)</td>
+				<td>
+					<input type="text" value="@Model.CustomerCode" name="Bom.CustomerCode"/></td>
+				<td>@Html.LabelFor(_ => _.ProductName)</td>
+				<td>
+					<input type="text" value="@Model.ProductName" name="Bom.ProductName"/></td>
+				<td>@Html.LabelFor(_ => _.ProductionLossRate)</td>
+				<td>
+					<input type="text" value="@Model.ProductionLossRate" name="Bom.ProductionLossRate"/></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bomItems">
+		<thead>
+			<tr>
+				<th>BomItem表</th>
+			</tr>
+			<tr>
+				<th><a href="javascript:add();">新增</a></th>
+				<th><a href="javascript:del();">删除</a></th>
+				<th colspan="@(new BomItem().GetType().GetProperties().Count() - 3)"></th>
+			</tr>
+			<tr>
+				<th>
+					<input type="checkbox" /></th>
+				@foreach (var pro in new BomItem().GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+	{
+					<th>@pro.Name</th>
+	}
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model.Items != null)
+   {
+	   var i = -1;
+	   foreach (var item in Model.Items)
+	   {
+				<tr>
+					<td>
+						<input type="checkbox" value="@item.Id" name="items[@(++i)].Id"/>
+						<input type="hidden" value="@item.Id" name="items[@i].Id"/>
+						<input type="hidden" value="@Model.Id" name="items[@i].BomId"/>
+					</td>
+					@foreach (var pro in item.GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+	 {
+						<td>
+							<input type="text" value="@pro.GetValue(item, null)" name="items[@i].@pro.Name"/></td>
+	 }
+				</tr>
+	   }
+   }
+		</tbody>
+	</table>
+}
+<script type="text/template" id="bomItemRowTemp">
+	<tr>
+		<td>
+			<input type="checkbox" name="items[index].Id" />
+			<input type="hidden" value="@Model.Id" name="items[index].BomId"/>
+		</td>
+		@foreach (var pro in new BomItem().GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+  {
+			<td>
+				<input type="text" name="items[index].@pro.Name" /></td>
+  }
+	</tr>
+</script>
+<script type="text/javascript">
+	function add() {
+		var count = $("#bomItems tbody tr").length;
+		var $temp = $($("#bomItemRowTemp").html().replace(/\[index\]/g, "[" + count + "]"));
+		$("#bomItems tbody").append($temp);
+	}
+	function del() {
+		$("#bomItems tbody tr :checkbox:checked").each(function () {
+			$(this).parent().parent().remove();
+		});
+	}
+</script>
