@@ -1,0 +1,22 @@
+﻿a:link,a:visited{ text-decoration: none;}
+a:hover{text-decoration:underline;  /*鼠标放上去有下划线*/}
+
+.layout{ margin: 0;padding: 0;border: 0;border-collapse: collapse;}
+.layout td{ border: none;vertical-align: top;}
+
+.menu{list-style-type: none;margin: 5px;margin-right: 0;padding: 3px;font-weight: bolder;font-family: "楷体";height: 100%;border: solid 1px #a9a9a9;background-color: #cccccc;width: 150px;}
+.menu li{ margin-bottom: 5px;}
+
+.toolbar{ margin: 5px;padding: 5px;border: solid 1px#a9a9a9;background-color: #cccccc;}
+.toolbar a{ margin: 3px;padding: 3px;font-weight: bold; font-family: "楷体"}
+
+.gridview{ margin: 5px;padding: 0;border: solid 1px #a9a9a9;border-collapse:collapse;}
+.gridview thead{background-color: #ccc}
+.gridview td,th{margin:0; padding: 3px;border: solid 1px #a9a9a9;}
+.gridview a{ margin: 3px;padding: 3px;font-family: "幼圆"}
+
+.formview{ margin: 5px;padding: 0;border: solid 1px #a9a9a9;border-collapse: collapse;}
+.formview label{ font-weight: bold;}
+.formview .caption{ background-color: #cccccc;font-family: "幼圆"}
+.formview input{height: 100%;margin: 1px;padding: 3px;border: none;}
+.formview td{margin:0; padding: 3px;border: solid 1px #a9a9a9;}

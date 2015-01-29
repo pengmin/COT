@@ -133,7 +133,10 @@
     <Compile Include="App_Start\IocConfig.cs" />
     <Compile Include="Controllers\BasiceController.cs" />
     <Compile Include="Controllers\BomController.cs" />
+    <Compile Include="Controllers\MaterialController.cs" />
     <Compile Include="Controllers\PoController.cs" />
+    <Compile Include="Controllers\RawMaterialController.cs" />
+    <Compile Include="Controllers\RequisitionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -146,6 +149,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Contents\main.css" />
     <Content Include="Global.asax" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
@@ -161,6 +165,14 @@
     <Content Include="Scripts\jquery-2.1.3.min.map" />
     <Content Include="Views\Po\Index.cshtml" />
     <Content Include="Views\Po\Edit.cshtml" />
+    <Content Include="Views\Material\Index.cshtml" />
+    <Content Include="Views\Material\Edit.cshtml" />
+    <Content Include="Views\Requisition\Index.cshtml" />
+    <Content Include="Views\Requisition\Edit.cshtml" />
+    <Content Include="Views\RawMaterial\Index.cshtml" />
+    <Content Include="Views\RawMaterial\Edit.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

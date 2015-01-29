@@ -1,0 +1,25 @@
+﻿@model Cot.Entities.RawMaterial
+@{
+	ViewBag.Title = "Edit";
+}
+<div class="toolbar"><a href="/rawmaterial">返回列表</a><a href="javascript:$('form').submit();">保存</a></div>
+@using (Html.BeginForm())
+{
+	@Html.HiddenFor(_ => _.Id)
+	<table class="formview">
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.Code)</td>
+			<td>@Html.TextBoxFor(_ => _.Code)</td>
+			<td class="caption">@Html.LabelFor(_ => _.Name)</td>
+			<td>@Html.TextBoxFor(_ => _.Name)</td>
+			<td class="caption">@Html.LabelFor(_ => _.Width)</td>
+			<td>@Html.TextBoxFor(_ => _.Width)</td>
+			<td class="caption">@Html.LabelFor(_ => _.Length)</td>
+			<td>@Html.TextBoxFor(_ => _.Length)</td>
+		</tr>
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.Unit)</td>
+			<td>@Html.TextBoxFor(_ => _.Unit)</td>
+		</tr>
+	</table>	
+}

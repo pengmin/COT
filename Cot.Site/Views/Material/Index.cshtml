@@ -1,0 +1,36 @@
+﻿@using Cot.Entities
+@model IEnumerable<Material>
+@{
+	ViewBag.Title = "Index";
+}
+<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+<div><a href="/material/add">新增</a><a href="javascript:$('form').submit();">删除</a></div>
+<form action="/material/del" method="POST">
+	<table>
+		<thead>
+			<tr>
+				<th>
+					<input type="checkbox" /></th>
+				@foreach (var item in typeof(Material).GetProperties().Where(_ => _.Name != "Id"))
+	{
+					<th>@item.Name</th>
+	}
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+   {
+				<tr>
+					<td>
+						<input type="checkbox" value="@item.Id" name="ids" /></td>
+					@foreach (var pro in item.GetType().GetProperties().Where(_ => _.Name != "Id"))
+	 {
+						<td>@pro.GetValue(item, null)</td>
+	 }
+					<td><a href="/material/edit/@item.Id">编辑</a></td>
+				</tr>
+   }
+		</tbody>
+	</table>
+</form>

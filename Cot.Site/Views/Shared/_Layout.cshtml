@@ -1,0 +1,28 @@
+﻿@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>@ViewBag.Title</title>
+	<link href="~/Contents/main.css" rel="stylesheet" />
+	<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+</head>
+<body>
+	<table class="layout">
+		<tr>
+			<td>
+				<ul class="menu">
+					<li><a>Bom表管理</a></li>
+					<li><a>物料管理</a></li>
+					<li><a>生产工单管理</a></li>
+					<li><a>原材料管理</a></li>
+					<li><a>请购单管理</a></li>
+				</ul>
+			</td>
+			<td>@RenderBody()</td>
+		</tr>
+	</table>
+</body>
+</html>

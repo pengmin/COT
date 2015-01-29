@@ -1,0 +1,46 @@
+﻿@using System.ComponentModel
+@using System.Reflection
+@using Cot.Entities
+@model Requisition
+@{
+	ViewBag.Title = "Edit";
+	var pros = new List<PropertyInfo>();
+}
+@Html.HiddenFor(_ => _.Id)
+<table>
+	<tr>
+		<td>@Html.LabelFor(_ => _.Code)</td>
+		<td>@Html.TextBoxFor(_ => _.Code)</td>
+		<td>@Html.LabelFor(_ => _.Department)</td>
+		<td>@Html.TextBoxFor(_ => _.Department)</td>
+		<td>@Html.LabelFor(_ => _.Date)</td>
+		<td>@Html.TextBoxFor(_ => _.Date)</td>
+	</tr>
+</table>
+<table>
+	<thead>
+		<tr>
+			@foreach (var pro in typeof(RequisitionItem).GetProperties())
+   {
+	   var attrs = pro.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+	   var attr = attrs.FirstOrDefault() as DisplayNameAttribute;
+	   if (attr != null)
+	   {
+		   pros.Add(pro);
+				<th>@attr.DisplayName</th>
+	   }
+   }
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.Items)
+  {
+			<tr>
+				@foreach (var pro in pros)
+	{
+					<td>@pro.GetValue(item, null)</td>
+	}
+			</tr>
+  }
+	</tbody>
+</table>

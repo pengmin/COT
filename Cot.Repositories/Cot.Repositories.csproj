@@ -66,6 +66,18 @@
     <Compile Include="Migrations\201501271306208_ResetPoModel2.Designer.cs">
       <DependentUpon>201501271306208_ResetPoModel2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201501271447301_AddMaterialModel.cs" />
+    <Compile Include="Migrations\201501271447301_AddMaterialModel.Designer.cs">
+      <DependentUpon>201501271447301_AddMaterialModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501281511431_AddRequisitionModel.cs" />
+    <Compile Include="Migrations\201501281511431_AddRequisitionModel.Designer.cs">
+      <DependentUpon>201501281511431_AddRequisitionModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501291426284_AddRawMaterialModel.cs" />
+    <Compile Include="Migrations\201501291426284_AddRawMaterialModel.Designer.cs">
+      <DependentUpon>201501291426284_AddRawMaterialModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="UnitOfWork.cs" />
@@ -101,6 +113,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501271306208_ResetPoModel2.resx">
       <DependentUpon>201501271306208_ResetPoModel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501271447301_AddMaterialModel.resx">
+      <DependentUpon>201501271447301_AddMaterialModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501281511431_AddRequisitionModel.resx">
+      <DependentUpon>201501281511431_AddRequisitionModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501291426284_AddRawMaterialModel.resx">
+      <DependentUpon>201501291426284_AddRawMaterialModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
