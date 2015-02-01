@@ -1,0 +1,86 @@
+﻿@model Cot.Entities.Scheduling
+@{
+	ViewBag.Title = "交货排程-编辑";
+	var i = -1;
+}
+<div class="toolbar"><a href="/scheduling">返回列表</a><a href="javascript:save();">保存</a></div>
+@using (Html.BeginForm())
+{
+	@Html.HiddenFor(_ => _.Id)
+	<table class="formview">
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.CustomerName)</td>
+			<td>@Html.TextBoxFor(_ => _.CustomerName)</td>
+			<td class="caption">@Html.LabelFor(_ => _.CustomerCode)</td>
+			<td>@Html.TextBoxFor(_ => _.CustomerCode)</td>
+			<td class="caption">@Html.LabelFor(_ => _.ProductName)</td>
+			<td>@Html.TextBoxFor(_ => _.ProductName)</td>
+			<td class="caption">@Html.LabelFor(_ => _.ProductCode)</td>
+			<td>@Html.TextBoxFor(_ => _.ProductCode)</td>
+		</tr>
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.Spec)</td>
+			<td>@Html.TextBoxFor(_ => _.Spec)</td>
+			<td class="caption">@Html.LabelFor(_ => _.Orders)</td>
+			<td>@Html.TextBoxFor(_ => _.Orders)</td>
+		</tr>
+	</table>
+	<div class="toolbar"><a href="javascript:addDelivery();">新增</a><a href="javascript:delDelivery();">删除</a></div>
+	<table class="gridview">
+		<thead>
+			<tr>
+				<th>
+					<input type="checkbox" /></th>
+				<th>交货日期</th>
+				<th>交货数量</th>
+			</tr>
+		</thead>
+		<tbody id="deliveries">
+			@foreach (var item in Model.Deliveries)
+   {
+				<tr>
+					<td>
+						<input type="hidden" value="@item.SchedulingId" name="Deliveries[@(++i)].SchedulingId" />
+						<input type="checkbox" value="@item.Id" name="Deliveries[@i].Id"/>
+					</td>
+					<td>
+						<input type="text" value="@item.Date.ToShortDateString()" name="Deliveries[@i].Date"/></td>
+					<td>
+						<input type="text" value="@item.Orders" name="Deliveries[@i].Orders"/></td>
+				</tr>
+   }
+		</tbody>
+	</table>
+}
+<script>
+	var index=@i;
+	function addDelivery() {
+		var $temp = $('#temp').text().replace(/{i}/g,++index);
+		$("#deliveries").append($temp);
+	}
+	function delDelivery() {
+		$("#deliveries :checkbox:checked").parent().parent().remove();
+	}
+	function save() {
+		var i = 0;
+		$("#deliveries tr").each(function() {
+			$(this).find("input").each(function() {
+				$(this).attr("name",$(this).attr("name").replace(/\[\d\]/g,"["+i+"]"));
+			});
+			i++;
+		});
+		$("form").submit();
+	}
+</script>
+<script type="text/template" id="temp">
+	<tr>
+		<td>
+			<input type="hidden" name="Deliveries[{i}].SchedulingId" />
+			<input type="checkbox" name="Deliveries[{i}].Id" />
+		</td>
+		<td>
+			<input type="text" name="Deliveries[{i}].Date" /></td>
+		<td>
+			<input type="text" name="Deliveries[{i}].Orders" /></td>
+	</tr>
+</script>

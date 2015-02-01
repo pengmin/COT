@@ -24,28 +24,82 @@ namespace Cot.Site.Controllers
 			return View("Edit", new BomModel());
 		}
 		[HttpPost]
-		public ActionResult Add(Bom bom)
+		public ActionResult Add(Bom bom, IEnumerable<BomItem> items, IEnumerable<BomProcess> processes)
 		{
-			UnitOfWork.GetRepository<IRepository<Bom>>().Add(bom);
-			UnitOfWork.Commit();
-			return Redirect("Add");
+			Save(bom, items, processes, true);
+			return RedirectToAction("Edit", new { bom.Id });
 		}
 
 		[HttpGet]
 		public ActionResult Edit(int id)
 		{
 			var entity = UnitOfWork.GetRepository<IRepository<Bom>>().Query().FirstOrDefault(_ => _.Id == id);
-			var model = Mapper.DynamicMap<BomModel>(entity);
-			model.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query().Where(_ => _.BomId == entity.Id);
+			entity.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query()
+				.Where(_ => _.BomId == entity.Id)
+				.ToList();
+			entity.BomProcesses = UnitOfWork.GetRepository<IRepository<BomProcess>>().Query()
+				.Where(_ => _.BomId == entity.Id)
+				.ToList();
 
-			return View(model);
+			return View(entity);
 		}
 		[HttpPost]
-		public ActionResult Edit(BomModel bom, IEnumerable<BomItem> items)
+		public ActionResult Edit(Bom bom, IEnumerable<BomItem> items, IEnumerable<BomProcess> processes)
 		{
-			var entity = Mapper.DynamicMap<Bom>(bom);
-			UnitOfWork.GetRepository<IRepository<Bom>>().Modify(entity);
+			Save(bom, items, processes, false);
+			return View(bom);
+		}
 
+		public ActionResult Del(int id)
+		{
+			var itemIds = UnitOfWork.GetRepository<IRepository<BomItem>>().Query()
+				.Where(_ => _.BomId == id)
+				.Select(_ => _.Id).ToList();
+			var proIds = UnitOfWork.GetRepository<IRepository<BomProcess>>().Query()
+				.Where(_ => _.BomId == id)
+				.Select(_ => _.Id);
+			UnitOfWork.GetRepository<IRepository<Bom>>().Remove(new Bom { Id = id });
+			foreach (var item in itemIds)
+			{
+				UnitOfWork.GetRepository<IRepository<BomItem>>().Remove(new BomItem() { Id = item });
+			}
+			foreach (var item in proIds)
+			{
+				UnitOfWork.GetRepository<IRepository<BomProcess>>().Remove(new BomProcess { Id = item });
+			}
+			UnitOfWork.Commit();
+			return RedirectToAction("Index");
+		}
+
+		private void Save(Bom bom, IEnumerable<BomItem> items, IEnumerable<BomProcess> processes, bool isAdd)
+		{
+			if (isAdd)
+			{
+				UnitOfWork.GetRepository<IRepository<Bom>>().Add(bom);
+				UnitOfWork.Commit();
+				foreach (var item in items)
+				{
+					item.BomId = bom.Id;
+				}
+				foreach (var item in processes)
+				{
+					item.BomId = bom.Id;
+				}
+			}
+			else
+			{
+				UnitOfWork.GetRepository<IRepository<Bom>>().Modify(bom);
+			}
+
+			ResetBomItems(bom, items);
+			ResetBomItems(bom, processes);
+			UnitOfWork.Commit();
+
+			bom.Items = items;
+			bom.BomProcesses = processes;
+		}
+		private void ResetBomItems(Bom bom, IEnumerable<BomItem> items)
+		{
 			var oldIds = UnitOfWork.GetRepository<IRepository<BomItem>>().Query()
 				.Where(_ => _.BomId == bom.Id)
 				.Select(_ => _.Id)
@@ -64,10 +118,27 @@ namespace Cot.Site.Controllers
 			{
 				UnitOfWork.GetRepository<IRepository<BomItem>>().Modify(item);
 			}
+		}
+		private void ResetBomItems(Bom bom, IEnumerable<BomProcess> processes)
+		{
+			var oldIds = UnitOfWork.GetRepository<IRepository<BomProcess>>().Query()
+				.Where(_ => _.BomId == bom.Id)
+				.Select(_ => _.Id)
+				.ToArray();
+			var itemRep = UnitOfWork.GetRepository<IRepository<BomProcess>>();
 
-			UnitOfWork.Commit();
-			bom.Items = items;
-			return View(bom);
+			foreach (var id in oldIds.Where(id => processes.Select(_ => _.Id).All(_ => _ != id)))
+			{
+				itemRep.Remove(new BomProcess { Id = id });
+			}
+			foreach (var item in processes.Where(_ => _.Id == 0))
+			{
+				itemRep.Add(item);
+			}
+			foreach (var item in processes.Where(item => oldIds.Any(_ => _ == item.Id)))
+			{
+				UnitOfWork.GetRepository<IRepository<BomProcess>>().Modify(item);
+			}
 		}
 
 		[HttpPost]
@@ -94,6 +165,36 @@ namespace Cot.Site.Controllers
 			}
 
 			return RedirectToAction("Index");
+		}
+
+		public ActionResult Scheduling(int id)
+		{
+			var scheduling = UnitOfWork.GetRepository<IRepository<Scheduling>>().Query()
+				.FirstOrDefault(_ => _.Id == id);
+			var bom = UnitOfWork.GetRepository<IRepository<Bom>>().Query()
+				.FirstOrDefault(_ =>
+					_.CustomerCode == scheduling.CustomerCode &&
+					_.ProductName == scheduling.ProductName &&
+					_.ProductSpec == scheduling.Spec);
+			if (bom == null)
+			{
+				bom = new Bom
+				{
+					CustomerCode = scheduling.CustomerCode,
+					ProductName = scheduling.ProductName,
+					ProductSpec = scheduling.Spec
+				};
+				ViewBag.Action = "/bom/add";
+			}
+			else
+			{
+				bom.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query()
+					.Where(_ => _.BomId == bom.Id);
+				bom.BomProcesses = UnitOfWork.GetRepository<IRepository<BomProcess>>().Query()
+					.Where(_ => _.BomId == bom.Id);
+				ViewBag.Action = "/bom/edit";
+			}
+			return View("Edit", bom);
 		}
 	}
 }

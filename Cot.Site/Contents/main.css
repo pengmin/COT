@@ -12,7 +12,7 @@ a:hover{text-decoration:underline;  /*鼠标放上去有下划线*/}
 
 .gridview{ margin: 5px;padding: 0;border: solid 1px #a9a9a9;border-collapse:collapse;}
 .gridview thead{background-color: #ccc}
-.gridview td,th{margin:0; padding: 3px;border: solid 1px #a9a9a9;}
+.gridview td,th{margin:0; padding: 3px;border: solid 1px #a9a9a9;white-space:nowrap;}
 .gridview a{ margin: 3px;padding: 3px;font-family: "幼圆"}
 
 .formview{ margin: 5px;padding: 0;border: solid 1px #a9a9a9;border-collapse: collapse;}

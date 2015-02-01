@@ -1,61 +1,62 @@
-﻿@using Cot.Entities
-@model Cot.Site.Models.BomModel
+﻿@using System.ComponentModel
+@using System.Reflection
+@using Cot.Entities
+@model Bom
 @{
-	ViewBag.Title = "Edit";
+	ViewBag.Title = "物料清单-编辑";
+	var pros = new List<PropertyInfo>();
+	var i = -1;
+	var pi = -1;
 }
-<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+<div class="toolbar"><a href="/bom/index">返回列表</a><a href="javascript:save();">保存</a></div>
 @using (Html.BeginForm())
 {
 	<input type="hidden" value="@Model.Id" name="Bom.Id"/>
-	<table>
-		<thead>
-			<tr>
-				<th colspan="8">BOM表</th>
-			</tr>
-			<tr>
-				<th><a href="/bom/index">返回列表</a></th>
-				<th colspan="7"><a href="javascript:$('form').submit();">保存</a></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>@Html.LabelFor(_ => _.CustomerCode)</td>
-				<td>
-					<input type="text" value="@Model.CustomerCode" name="Bom.CustomerCode"/></td>
-				<td>@Html.LabelFor(_ => _.ProductName)</td>
-				<td>
-					<input type="text" value="@Model.ProductName" name="Bom.ProductName"/></td>
-				<td>@Html.LabelFor(_ => _.ProductionLossRate)</td>
-				<td>
-					<input type="text" value="@Model.ProductionLossRate" name="Bom.ProductionLossRate"/></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
+	<table class="formview">
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.CustomerCode)</td>
+			<td>
+				<input type="text" value="@Model.CustomerCode" name="Bom.CustomerCode"/></td>
+			<td class="caption">@Html.LabelFor(_ => _.ProductName)</td>
+			<td>
+				<input type="text" value="@Model.ProductName" name="Bom.ProductName"/></td>
+			<td class="caption">@Html.LabelFor(_ => _.MoldCode)</td>
+			<td>
+				<input type="text" value="@Model.MoldCode" name="Bom.MoldCode"/></td>
+			<td class="caption">@Html.LabelFor(_ => _.ProductionLossRate)</td>
+			<td>
+				<input type="text" value="@Model.ProductionLossRate" name="Bom.ProductionLossRate"/></td>
+		</tr>
+		<tr>
+			<td class="caption">@Html.LabelFor(_ => _.ProductSpec)</td>
+			<td>
+				<input type="text" value="@Model.ProductSpec" name="Bom.ProductSpec"/></td>
+			<td class="caption">@Html.LabelFor(_ => _.ProductType)</td>
+			<td>
+				<input type="text" value="@Model.ProductType" name="Bom.ProductType"/></td>
+		</tr>
 	</table>
-	<table id="bomItems">
+	<div class="toolbar"><a href="javascript:add();">新增</a><a href="javascript:del();">删除</a></div>
+	<table id="bomItems" class="gridview">
 		<thead>
-			<tr>
-				<th>BomItem表</th>
-			</tr>
-			<tr>
-				<th><a href="javascript:add();">新增</a></th>
-				<th><a href="javascript:del();">删除</a></th>
-				<th colspan="@(new BomItem().GetType().GetProperties().Count() - 3)"></th>
-			</tr>
 			<tr>
 				<th>
 					<input type="checkbox" /></th>
-				@foreach (var pro in new BomItem().GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+				@foreach (var pro in new BomItem().GetType().GetProperties())
 	{
-					<th>@pro.Name</th>
+		var attrs = pro.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+		if (!attrs.Any()) { continue; }
+
+		var attr = attrs.First() as DisplayNameAttribute;
+		if (attr == null) { continue; }
+		pros.Add(pro);
+					<th>@attr.DisplayName</th>
 	}
 			</tr>
 		</thead>
 		<tbody>
 			@if (Model.Items != null)
    {
-	   var i = -1;
 	   foreach (var item in Model.Items)
 	   {
 				<tr>
@@ -64,7 +65,7 @@
 						<input type="hidden" value="@item.Id" name="items[@i].Id"/>
 						<input type="hidden" value="@Model.Id" name="items[@i].BomId"/>
 					</td>
-					@foreach (var pro in item.GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+					@foreach (var pro in pros)
 	 {
 						<td>
 							<input type="text" value="@pro.GetValue(item, null)" name="items[@i].@pro.Name"/></td>
@@ -74,14 +75,65 @@
    }
 		</tbody>
 	</table>
+	<div class="toolbar"><a href="javascript:addProcess();">新增</a><a href="javascript:delProcess();">删除</a></div>
+	<table id="bomProcesses" class="gridview">
+		<thead>
+			<tr>
+				<th>
+					<input type="checkbox" /></th>
+				<th>工艺流程</th>
+				<th>生产机台</th>
+				<th>产能</th>
+				<th>调机时间(小时)</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model.BomProcesses != null)
+   {
+	   foreach (var item in Model.BomProcesses)
+	   {
+				<tr>
+					<td>
+						<input type="checkbox" value="@item.Id" name="processes[@(++pi)].Id"/>
+						<input type="hidden" value="@item.BomId" name="processes[@pi].BomId" />
+					</td>
+					<td>
+						<input type="text" value="@item.Name" name="processes[@pi].Name"/></td>
+					<td>
+						<input type="text" value="@item.Machine" name="processes[@pi].Machine"/></td>
+					<td>
+						<input type="text" value="@item.Capacity" name="processes[@pi].Capacity"/></td>
+					<td>
+						<input type="text" value="@item.Debug" name="processes[@pi].Debug"/></td>
+				</tr>
+	   }
+   }
+		</tbody>
+	</table>
 }
+<script type="text/template" id="bomProcessTemp">
+	<tr>
+		<td>
+			<input type="checkbox" name="processes[{i}].Id" />
+			<input type="hidden" value="@Model.Id" name="processes[{i}].BomId" />
+		</td>
+		<td>
+			<input type="text" name="processes[{i}].Name" /></td>
+		<td>
+			<input type="text" name="processes[{i}].Machine" /></td>
+		<td>
+			<input type="text" name="processes[{i}].Capacity" /></td>
+		<td>
+			<input type="text" name="processes[{i}].Debug" /></td>
+	</tr>
+</script>
 <script type="text/template" id="bomItemRowTemp">
 	<tr>
 		<td>
 			<input type="checkbox" name="items[index].Id" />
 			<input type="hidden" value="@Model.Id" name="items[index].BomId"/>
 		</td>
-		@foreach (var pro in new BomItem().GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "BomId"))
+		@foreach (var pro in pros)
   {
 			<td>
 				<input type="text" name="items[index].@pro.Name" /></td>
@@ -89,14 +141,45 @@
 	</tr>
 </script>
 <script type="text/javascript">
+	var action = "@ViewBag.Action";
+	var index=@i;
+	var processIndex=@pi;
 	function add() {
-		var count = $("#bomItems tbody tr").length;
-		var $temp = $($("#bomItemRowTemp").html().replace(/\[index\]/g, "[" + count + "]"));
+		var $temp = $($("#bomItemRowTemp").text().replace(/\[index\]/g, "[" + (++index) + "]"));
 		$("#bomItems tbody").append($temp);
 	}
 	function del() {
 		$("#bomItems tbody tr :checkbox:checked").each(function () {
 			$(this).parent().parent().remove();
 		});
+	}
+	function addProcess() {
+		var temp = $("#bomProcessTemp").text().replace(/{i}/g,++processIndex);
+		$("#bomProcesses tbody").append(temp);
+	}
+	function delProcess() {
+		$("#bomProcesses tbody tr :checkbox:checked").each(function () {
+			$(this).parent().parent().remove();
+		});
+	}
+	function save() {
+		var i = -1;
+		$("#bomItems tbody tr").each(function() {
+			i++;
+			$(this).find("input").each(function() {
+				$(this).attr("name", $(this).attr("name").replace(/\[\d\]/g, "[" + i + "]"));
+			});
+		});
+		i = -1;
+		$("#bomProcesses tbody tr").each(function() {
+			i++;
+			$(this).find("input").each(function() {
+				$(this).attr("name", $(this).attr("name").replace(/\[\d\]/g, "[" + i + "]"));
+			});
+		});
+		if (action != "") {
+			$('form').attr('action',action);
+		}
+		$('form').submit();
 	}
 </script>

@@ -137,12 +137,14 @@
     <Compile Include="Controllers\PoController.cs" />
     <Compile Include="Controllers\RawMaterialController.cs" />
     <Compile Include="Controllers\RequisitionController.cs" />
+    <Compile Include="Controllers\SchedulingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BomItemModel.cs" />
     <Compile Include="Models\BomModel.cs" />
     <Compile Include="Models\ModelMapper.cs" />
+    <Compile Include="Models\SchedulingModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +175,8 @@
     <Content Include="Views\RawMaterial\Edit.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Scheduling\Index.cshtml" />
+    <Content Include="Views\Scheduling\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

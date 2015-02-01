@@ -1,46 +1,61 @@
-﻿@using Cot.Entities
+﻿@using System.ComponentModel
+@using System.Reflection
+@using Cot.Entities
 @model Po
 @{
 	ViewBag.Title = "Edit";
 }
-<script src="~/Scripts/jquery-2.1.3.min.js"></script>
-<div>
+<div class="toolbar">
+	<a href="/po">返回列表</a>
 	<a href="javascript:$('form').submit();">保存</a>
 </div>
 @using (Html.BeginForm())
 {
 	<input type="hidden" value="@Model.Id" name="po.Id"/>
-	<table>
-		<tr>
-			<td>@Html.LabelFor(_ => _.ProductionLossRate)</td>
-			<td>
-				<input type="text" value="@Model.ProductionLossRate" name="po.ProductionLossRate"/></td>
-			<td>@Html.LabelFor(_ => _.FixedLossQuantity)</td>
-			<td>
-				<input type="text" value="@Model.FixedLossQuantity" name="po.FixedLossQuantity"/></td>
-			<td>@Html.LabelFor(_ => _.Skip)</td>
-			<td>
-				<input type="text" value="@Model.Skip" name="po.Skip"/></td>
-			<td>@Html.LabelFor(_ => _.Cavity)</td>
-			<td>
-				<input type="text" value="@Model.Cavity" name="po.Cavity"/></td>
-		</tr>
-		<tr>
-			<td>@Html.LabelFor(_ => _.OrderQuantity)</td>
-			<td>
-				<input type="text" value="@Model.OrderQuantity" name="po.OrderQuantity"/></td>
-			<td>@Html.LabelFor(_ => _.WorkQuantity)</td>
-			<td>
-				<input type="text" value="@Model.WorkQuantity" name="po.WorkQuantity"/></td>
-		</tr>
+	<table class="formview">
+		@{ var i = 0; }
+		@foreach (var pro in Model.GetType().GetProperties())
+  {
+	  var attrs = pro.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+	  if (attrs.Any())
+	  {
+		  var attr = attrs.First() as DisplayNameAttribute;
+		  if (attr != null)
+		  {
+			  if (i++ % 4 == 0)
+			  {
+			@:<tr>
+}
+					<td class="caption">
+						<label>@attr.DisplayName</label></td>
+					<td>
+						<input type="text" value="@pro.GetValue(Model, null)" name="po.@pro.Name"/></td>
+			  if (i % 4 == 0)
+			  {
+						@:</tr>
+																	}
+		  }
+	  }
+  }
 	</table>
 }
-<table>
+<table class="gridview">
 	<thead>
 		<tr>
-			@foreach (var item in typeof(PoItem).GetProperties().Where(_ => _.Name != "Id" && _.Name != "PoId"))
+			@{ var pros = new List<PropertyInfo>();}
+			@foreach (var item in typeof(PoItem).GetProperties())
    {
-				<th>@item.Name</th>
+	   var attrs = item.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+	   if (attrs.Any())
+	   {
+		   var attr = attrs.First() as DisplayNameAttribute;
+		   if (attr != null)
+		   {
+			   pros.Add(item);
+				<th>@attr.DisplayName</th>
+		   }
+	   }
+
    }
 		</tr>
 	</thead>
@@ -48,7 +63,7 @@
 		@foreach (var item in Model.Items)
   {
 			<tr>
-				@foreach (var pro in item.GetType().GetProperties().Where(_ => _.Name != "Id" && _.Name != "PoId"))
+				@foreach (var pro in pros)
 	{
 					<td>@pro.GetValue(item, null)</td>
 	}

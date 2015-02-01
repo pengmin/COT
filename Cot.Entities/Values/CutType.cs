@@ -8,10 +8,10 @@
 		/// <summary>
 		/// 分条
 		/// </summary>
-		Horizontal,
+		分条,
 		/// <summary>
 		/// 分切
 		/// </summary>
-		Vertical
+		分切
 	}
 }

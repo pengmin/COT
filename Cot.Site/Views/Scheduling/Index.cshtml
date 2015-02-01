@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Cot.Entities.Scheduling>
+@{
+	ViewBag.Title = "交货排程";
+	var start = ViewBag.Start is DateTime ? (DateTime)ViewBag.Start : DateTime.Now.Date;
+	var end = ViewBag.End is DateTime ? (DateTime)ViewBag.End : DateTime.Now.Date;
+}
+<form action="/scheduling/index" method="POST">
+	<div>
+		<table>
+			<tr>
+				<td>
+					<label>开始交期：</label></td>
+				<td>
+					<input type="text" value="@start.ToShortDateString()" name="start"/></td>
+				<td>
+					<label>截止交期：</label></td>
+				<td>
+					<input type="text" value="@end.ToShortDateString()" name="end"/></td>
+				<td>
+					<input type="submit" value="查询" /></td>
+			</tr>
+		</table>
+	</div>
+</form>
+<div class="toolbar"><a href="/scheduling/add">新增</a></div>
+<form method="POST">
+	<table class="gridview">
+		<thead>
+			<tr>
+				<th>操作</th>
+				<th>
+					<input type="checkbox" /></th>
+				<th>客户名称</th>
+				<th>客户代码</th>
+				<th>产品名称</th>
+				<th>产品代码</th>
+				<th>规格</th>
+				<th>订单量</th>
+				@for (var date = start; date <= end; date = date.AddDays(1))
+	{
+					<th>
+						<input type="radio" value="@date" name="date" />@date.ToShortDateString()</th>
+	}
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+   {
+				<tr>
+					<td><a href="/bom/scheduling/@item.Id">BOM</a><br />
+						<a href="/scheduling/edit/@item.Id">编辑</a><br />
+						<a href="scheduling/del/@item.Id">删除</a></td>
+					<td>
+						<input type="checkbox" value="@item.Id" name="id"/></td>
+					<td>@item.CustomerName</td>
+					<td>@item.CustomerCode</td>
+					<td>@item.ProductName</td>
+					<td>@item.ProductCode</td>
+					<td>@item.Spec</td>
+					<td>@item.Orders</td>
+					@for (var date = start; date <= end; date = date.AddDays(1))
+	 {
+		 var delivery = item.Deliveries.FirstOrDefault(_ => _.Date == date);
+						<td>@if (delivery != null)
+		  {
+							@delivery.Orders
+		  }</td>
+	 }
+				</tr>
+   }
+		</tbody>
+	</table>
+</form>

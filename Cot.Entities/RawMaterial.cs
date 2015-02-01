@@ -43,7 +43,7 @@ namespace Cot.Entities
 		/// <returns>裁切数量</returns>
 		public int CanCutQuantity(CutParam param)
 		{
-			if (param.Type == CutType.Horizontal)
+			if (param.Type == CutType.分条)
 			{
 				return (int)((Width / param.Width) * (Length / param.Skip));//一条有多少个，共有多少条
 			}
@@ -70,7 +70,7 @@ namespace Cot.Entities
 				return null;
 			}
 			realQuantity = quantity;
-			if (param.Type == CutType.Horizontal)
+			if (param.Type == CutType.分条)
 			{
 				var newLen = Length - (quantity / (Width / param.Width) + (quantity % (Width / param.Width) > 1 ? 1 : 0) * param.Skip);
 				return new Material { Width = Width, Length = newLen };
