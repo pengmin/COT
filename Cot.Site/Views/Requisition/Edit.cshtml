@@ -3,21 +3,22 @@
 @using Cot.Entities
 @model Requisition
 @{
-	ViewBag.Title = "Edit";
+	ViewBag.Title = "请购单-编辑";
 	var pros = new List<PropertyInfo>();
 }
+<div class="toolbar"><a href="/Requisition">返回列表</a></div>
 @Html.HiddenFor(_ => _.Id)
-<table>
+<table class="formview">
 	<tr>
-		<td>@Html.LabelFor(_ => _.Code)</td>
+		<td class="caption">@Html.LabelFor(_ => _.Code)</td>
 		<td>@Html.TextBoxFor(_ => _.Code)</td>
-		<td>@Html.LabelFor(_ => _.Department)</td>
+		<td class="caption">@Html.LabelFor(_ => _.Department)</td>
 		<td>@Html.TextBoxFor(_ => _.Department)</td>
-		<td>@Html.LabelFor(_ => _.Date)</td>
+		<td class="caption">@Html.LabelFor(_ => _.Date)</td>
 		<td>@Html.TextBoxFor(_ => _.Date)</td>
 	</tr>
 </table>
-<table>
+<table class="gridview">
 	<thead>
 		<tr>
 			@foreach (var pro in typeof(RequisitionItem).GetProperties())

@@ -98,6 +98,18 @@
     <Compile Include="Migrations\201502011520581_ChangePoModel.Designer.cs">
       <DependentUpon>201502011520581_ChangePoModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502021317052_ChangePoModel1.cs" />
+    <Compile Include="Migrations\201502021317052_ChangePoModel1.Designer.cs">
+      <DependentUpon>201502021317052_ChangePoModel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502021318207_ChangePoModel2.cs" />
+    <Compile Include="Migrations\201502021318207_ChangePoModel2.Designer.cs">
+      <DependentUpon>201502021318207_ChangePoModel2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502021319257_ChangePoModel3.cs" />
+    <Compile Include="Migrations\201502021319257_ChangePoModel3.Designer.cs">
+      <DependentUpon>201502021319257_ChangePoModel3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="UnitOfWork.cs" />
@@ -157,6 +169,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502011520581_ChangePoModel.resx">
       <DependentUpon>201502011520581_ChangePoModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502021317052_ChangePoModel1.resx">
+      <DependentUpon>201502021317052_ChangePoModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502021318207_ChangePoModel2.resx">
+      <DependentUpon>201502021318207_ChangePoModel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502021319257_ChangePoModel3.resx">
+      <DependentUpon>201502021319257_ChangePoModel3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

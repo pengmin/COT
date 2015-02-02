@@ -53,6 +53,7 @@
     <Compile Include="Requisition.cs" />
     <Compile Include="Scheduling.cs" />
     <Compile Include="Services\BomToPoScrvice.cs" />
+    <Compile Include="SmallScheduling.cs" />
     <Compile Include="Stock.cs" />
     <Compile Include="Values\CutParam.cs" />
     <Compile Include="Values\CutType.cs" />

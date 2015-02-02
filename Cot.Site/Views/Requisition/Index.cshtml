@@ -3,15 +3,14 @@
 @using Cot.Entities
 @model IEnumerable<Requisition>
 @{
-	ViewBag.Title = "Index";
+	ViewBag.Title = "请购单";
 	var pros = new List<PropertyInfo>();
 }
-<script src="~/Scripts/jquery-2.1.3.min.js"></script>
-<div>
+<div class="toolbar">
 	<a href="javascript:$('form').submit();">删除</a>
 </div>
 <form action="/requisition/del" method="POST">
-	<table>
+	<table class="gridview">
 		<thead>
 			<tr>
 				<th>

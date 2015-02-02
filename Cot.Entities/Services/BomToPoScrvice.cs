@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Cot.Entities.Services
@@ -13,11 +14,22 @@ namespace Cot.Entities.Services
 		/// </summary>
 		/// <param name="bom">Bom</param>
 		/// <returns>Po</returns>
-		public static Po From(Bom bom)
+		public static Po From(Bom bom, Scheduling scheduling, Delivery delivery)
 		{
 			var po = new Po
 			{
+				CustomerCode = bom.CustomerCode,
+				Code = "C" + DateTime.Now.ToString("yyMMdd") + new Random().Next(9999).ToString().PadLeft(4, '0'),
+				Date = DateTime.Now.Date,
+				ProductCode = scheduling.ProductCode,
+				ProductName = scheduling.ProductName,
+				ProductSpec = scheduling.Spec,
+				OrderQuantity = delivery.Orders,
+				Mold = bom.MoldCode,
 				ProductionLossRate = bom.ProductionLossRate,
+				Delivery = delivery.Date,
+				Skip = bom.Items.First().Skip,
+				Cavity = bom.Items.First().Cavity
 			};
 			var items = new List<PoItem>();
 			foreach (var pi in bom.Items.Select(BomItemToPoItem))

@@ -144,25 +144,28 @@ namespace Cot.Site.Controllers
 		[HttpPost]
 		public ActionResult ToPo(string id)
 		{
-			if (string.IsNullOrWhiteSpace(id)) return RedirectToAction("Index");
+			//if (string.IsNullOrWhiteSpace(id)) return RedirectToAction("Index");
 
-			foreach (var item in id.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				var key = int.Parse(item);
-				var bom = UnitOfWork.GetRepository<IRepository<Bom>>().Query().SingleOrDefault(_ => _.Id == key);
-				if (bom == null) continue;
+			//foreach (var item in id.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+			//{
+			//	var key = int.Parse(item);
+			//	var bom = UnitOfWork.GetRepository<IRepository<Bom>>().Query().SingleOrDefault(_ => _.Id == key);
+			//	if (bom == null) continue;
 
-				bom.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query().Where(_ => _.BomId == bom.Id);
-				var po = BomToPoScrvice.From(bom);
-				UnitOfWork.GetRepository<IRepository<Po>>().Add(po);
-				UnitOfWork.Commit();
-				foreach (var pi in po.Items)
-				{
-					pi.PoId = po.Id;
-					UnitOfWork.GetRepository<IRepository<PoItem>>().Add(pi);
-				}
-				UnitOfWork.Commit();
-			}
+			//	var scheduling = UnitOfWork.GetRepository<IRepository<Scheduling>>().Query()
+			//		.FirstOrDefault(
+			//			_ => _.ProductName == bom.ProductName && _.Spec == bom.ProductSpec && _.CustomerCode == bom.CustomerCode);
+			//	bom.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query().Where(_ => _.BomId == bom.Id);
+			//	var po = BomToPoScrvice.From(bom, scheduling);
+			//	UnitOfWork.GetRepository<IRepository<Po>>().Add(po);
+			//	UnitOfWork.Commit();
+			//	foreach (var pi in po.Items)
+			//	{
+			//		pi.PoId = po.Id;
+			//		UnitOfWork.GetRepository<IRepository<PoItem>>().Add(pi);
+			//	}
+			//	UnitOfWork.Commit();
+			//}
 
 			return RedirectToAction("Index");
 		}

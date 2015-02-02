@@ -22,8 +22,9 @@
 		</table>
 	</div>
 </form>
-<div class="toolbar"><a href="/scheduling/add">新增</a></div>
+<div class="toolbar"><a href="/scheduling/add">新增</a><a href="javascript:run();">生产排程</a></div>
 <form method="POST">
+	<input type="hidden" value="@start" name="start"/>
 	<table class="gridview">
 		<thead>
 			<tr>
@@ -71,3 +72,17 @@
 		</tbody>
 	</table>
 </form>
+<script>
+	function run() {
+		if ($(":radio:checked").length == 0) {
+			alert("请选择排程日期");
+			return;
+		}
+		if ($("form tbody :checkbox:checked").length == 0) {
+			alert("请选择排程产品");
+			return;
+		}
+		$("form").attr("action", "/scheduling/run");
+		$("form").submit();
+	}
+</script>

@@ -17,7 +17,7 @@ namespace Cot.Entities
 		[DisplayName("日期")]
 		public DateTime Date { get; set; }
 		[DisplayName("产品代码")]
-		public DateTime ProductCode { get; set; }
+		public string ProductCode { get; set; }
 		[DisplayName("订单交期")]
 		public DateTime Delivery { get; set; }
 		[DisplayName("产品规格")]
