@@ -110,6 +110,10 @@
     <Compile Include="Migrations\201502021319257_ChangePoModel3.Designer.cs">
       <DependentUpon>201502021319257_ChangePoModel3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502031405561_SmallSchedulingModel.cs" />
+    <Compile Include="Migrations\201502031405561_SmallSchedulingModel.Designer.cs">
+      <DependentUpon>201502031405561_SmallSchedulingModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="UnitOfWork.cs" />
@@ -178,6 +182,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502021319257_ChangePoModel3.resx">
       <DependentUpon>201502021319257_ChangePoModel3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502031405561_SmallSchedulingModel.resx">
+      <DependentUpon>201502031405561_SmallSchedulingModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

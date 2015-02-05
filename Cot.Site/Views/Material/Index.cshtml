@@ -6,7 +6,7 @@
 	ViewBag.Title = "物料管理";
 	var pros = new List<PropertyInfo>();
 }
-<div class="toolbar"><a href="/material/add">新增</a><a href="javascript:$('form').submit();">删除</a></div>
+<div class="toolbar"><a href="/material/add">新增</a><a href="javascript:del();">删除</a></div>
 <form action="/material/del" method="POST">
 	<table class="gridview">
 		<thead>
@@ -45,3 +45,10 @@
 		</tbody>
 	</table>
 </form>
+<script>
+	function del() {
+		if (confirm("确定删除？")) {
+			$('form').submit();
+		}
+	}
+</script>

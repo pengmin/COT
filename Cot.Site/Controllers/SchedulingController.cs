@@ -69,6 +69,34 @@ namespace Cot.Site.Controllers
 			return RedirectToAction("Index");
 		}
 
+		public ActionResult Clear()
+		{
+			var pos = UnitOfWork.GetRepository<IRepository<Po>>().Query().ToArray();
+			var poIds = pos.Select(_ => _.Id);
+			var poItems = UnitOfWork.GetRepository<IRepository<PoItem>>().Query()
+				.Where(_ => poIds.Contains(_.PoId)).ToArray();
+			var res = UnitOfWork.GetRepository<IRepository<Requisition>>().Query().ToArray();
+			var smalls = UnitOfWork.GetRepository<IRepository<SmallScheduling>>().Query().ToArray();
+			foreach (var item in pos)
+			{
+				UnitOfWork.GetRepository<IRepository<Po>>().Remove(item);
+			}
+			foreach (var item in poItems)
+			{
+				UnitOfWork.GetRepository<IRepository<PoItem>>().Remove(item);
+			}
+			foreach (var item in res)
+			{
+				UnitOfWork.GetRepository<IRepository<Requisition>>().Remove(item);
+			}
+			foreach (var item in smalls)
+			{
+				UnitOfWork.GetRepository<IRepository<SmallScheduling>>().Remove(item);
+			}
+			UnitOfWork.Commit();
+			return RedirectToAction("Index");
+		}
+
 		public ActionResult Run(IEnumerable<int> id, DateTime date, DateTime start)
 		{
 			var poIds = new List<int>();
@@ -108,7 +136,9 @@ namespace Cot.Site.Controllers
 				}
 			}
 			StockNeed(poIds.ToArray());
-			return RedirectToAction("Index");
+			date = date.AddDays(1).AddSeconds(-1);//当天的最后一秒
+			SmallScheduling(id.ToArray(), start, date);
+			return RedirectToAction("Index", "SmallScheduling");
 		}
 
 		private void StockNeed(params int[] id)
@@ -174,5 +204,259 @@ namespace Cot.Site.Controllers
 			UnitOfWork.GetRepository<IRepository<Requisition>>().Add(requisition);
 			UnitOfWork.Commit();
 		}
+
+		private void SmallScheduling(int[] ids, DateTime start, DateTime end)
+		{
+			var schedulings = getSchedulings(ids, start, end);//所有要进行生产排程的交货排程及交期
+			var boms = GetBoms(schedulings);//获取关联的BOM
+			var pos = GetPos(boms, start, end);//获取bom关联的工单
+			var machines = GetAllMachine(boms);//所有需要的机台
+			//
+			start = start.AddHours(8);//每日上班时间
+			end = start.AddHours(18);//每日下班时间
+			var detail = GetDetail(schedulings, boms, pos, start, end);//生成工序时序表
+			var planInfo = Plan(detail, machines, start, end);
+			SaveSmallScheduling(planInfo);
+		}
+
+		private IEnumerable<Scheduling> getSchedulings(int[] ids, DateTime start, DateTime end)
+		{
+			return UnitOfWork.GetRepository<IRepository<Scheduling>>().Query()
+				.Where(_ => ids.Contains(_.Id) && !(_.StartDate > end || _.EndDate < start)).ToArray();
+		}
+		private IEnumerable<Bom> GetBoms(IEnumerable<Scheduling> schedulings)
+		{
+			var boms = new List<Bom>();
+			foreach (var item in schedulings)
+			{
+				var bom = UnitOfWork.GetRepository<IRepository<Bom>>().Query()
+					.FirstOrDefault(
+						_ => _.CustomerCode == item.CustomerCode && _.ProductName == item.ProductName && _.ProductSpec == item.Spec);
+				if (bom != null)
+				{
+					//bom.Items = UnitOfWork.GetRepository<IRepository<BomItem>>().Query()
+					//	.Where(_ => _.BomId == bom.Id);
+					bom.BomProcesses = UnitOfWork.GetRepository<IRepository<BomProcess>>().Query()
+						.Where(_ => _.BomId == bom.Id);
+					boms.Add(bom);
+				}
+			}
+			return boms;
+		}
+		private IEnumerable<Po> GetPos(IEnumerable<Bom> boms, DateTime start, DateTime end)
+		{
+			var list = new List<Po>();
+			foreach (var bom in boms)
+			{
+				var pos = UnitOfWork.GetRepository<IRepository<Po>>().Query()
+					.Where(
+						_ =>
+							_.CustomerCode == bom.CustomerCode && _.ProductName == bom.ProductName && _.ProductSpec == bom.ProductSpec &&
+							_.Delivery >= start && _.Delivery <= end)
+					.ToArray();
+				var po = pos.OrderBy(_ => _.Delivery).First();
+				po.OrderQuantity = pos.Sum(_ => _.OrderQuantity);
+				list.Add(po);//只返回同一bom关联的工单的汇总工单
+			}
+			return list;
+		}
+		private IEnumerable<string> GetAllMachine(IEnumerable<Bom> boms)
+		{
+			var list = new List<string>();
+			foreach (var bom in boms)
+			{
+				foreach (var process in bom.BomProcesses)
+				{
+					list.AddRange(process.Machine.Split('/'));
+				}
+			}
+			return list.Distinct();
+		}
+		private IEnumerable<SchedulingInfo> GetDetail(IEnumerable<Scheduling> schedulings, IEnumerable<Bom> boms, IEnumerable<Po> pos, DateTime start, DateTime end)
+		{
+			var details = new List<SchedulingInfo>();//工序排程列表
+			foreach (var scheduling in schedulings)
+			{
+				var bom =
+					boms.First(
+						_ =>
+							_.CustomerCode == scheduling.CustomerCode && _.ProductName == scheduling.ProductName &&
+							_.ProductSpec == scheduling.Spec);
+				var po =
+						pos.First(
+							_ => _.CustomerCode == bom.CustomerCode && _.ProductName == bom.ProductName && _.ProductSpec == bom.ProductSpec);
+				var i = -1;
+				var days = 0;
+				foreach (var process in bom.BomProcesses.OrderBy(_ => _.Name))
+				{
+					var detail = new SchedulingInfo
+					{
+						Scheduling = scheduling,
+						Bom = bom,
+						Po = po,
+						Process = process,
+						ProcessName = process.Name,
+						WorkTimes = (po.WorkQuantity + 0d) / po.Cavity / process.Capacity + process.Debug,
+						Machines = process.Machine.Split('/')
+					};
+					if (++i == 0)//第一道工序，从上班时间开始
+					{
+						detail.Start = start;
+					}
+					else
+					{
+						detail.Prev = details.Last();//前道工序
+						if (detail.Process.Capacity <= detail.Prev.Process.Capacity)//当前工序产能不大于前道工序，两者可以同时开使
+						{
+							detail.Start = detail.Prev.Start;
+						}
+						else
+						{
+							//若上一道工序完成时间已到下班时间，当前工序排到下一天；否则排到前一到工序完成时间之后
+							detail.Start = detail.Prev.End >= end ? start.AddDays(++days) : detail.Prev.End;
+						}
+					}
+					details.Add(detail);
+				}
+			}
+			return details;
+		}
+		//交期、Bom、Po、工序名称、工时、适合机台、是否已排班、key
+		private IEnumerable<Tuple<Scheduling, Bom, Po, string, double, IEnumerable<string>, /*bool,*/ int>> GetDetail(
+			IEnumerable<Scheduling> schedulings, IEnumerable<Bom> boms, IEnumerable<Po> pos)
+		{
+			var key = 0;
+			var list = new List<Tuple<Scheduling, Bom, Po, string, double, IEnumerable<string>, /*bool,*/ int>>();
+			foreach (var scheduling in schedulings)
+			{
+				var bom =
+					boms.First(
+						_ =>
+							_.CustomerCode == scheduling.CustomerCode && _.ProductName == scheduling.ProductName &&
+							_.ProductSpec == scheduling.Spec);
+				var thePos =
+					pos.Where(
+						_ => _.CustomerCode == bom.CustomerCode && _.ProductName == bom.ProductName && _.ProductSpec == bom.ProductSpec);
+				foreach (var process in bom.BomProcesses)
+				{
+					foreach (var po in thePos)
+					{
+						list.Add(new Tuple<Scheduling, Bom, Po, string, double, IEnumerable<string>, /*bool,*/ int>(
+						scheduling,
+						bom,
+						po,
+						process.Name,
+						(po.WorkQuantity + 0d) / po.Cavity / process.Capacity + process.Debug,
+						process.Machine.Split('/'),
+							//false,
+						++key
+						));
+					}
+				}
+			}
+			return list;
+		}
+		//机台、开始时间、结束时间、detail.key
+		private IEnumerable<MachineInfo> Plan(IEnumerable<SchedulingInfo> detail, IEnumerable<string> machines, DateTime start, DateTime end)
+		{
+			var list = new List<MachineInfo>();
+			//所有可排程的机台
+			var mList = machines.Select(_ => new MachineScheduling { Name = _, Start = start }).ToArray();
+			var days = 0;
+			while (detail.Any(_ => _.IsPlan == false))
+			{
+				foreach (var m in mList)
+				{
+					if (m.Start >= end)
+					{
+						m.Start = start.AddDays(++days);
+					}
+					foreach (var d in detail.Where(_ => _.IsPlan == false))
+					{
+						if (!d.Machines.Contains(m.Name)) continue;
+						if (m.Start >= d.Start)
+						{
+							list.Add(new MachineInfo
+							{
+								Name = m.Name,
+								SchedulingInfo = d,
+								Start = m.Start,
+								End = m.Start.AddHours(d.WorkTimes)
+							});
+							m.Start = m.Start.AddHours(d.WorkTimes);
+							d.IsPlan = true;
+						}
+					}
+				}
+				if (detail.All(_ => _.IsPlan)) continue;
+				//如果所有机台的最后完成时间小于所有未排程工序中最先开始时间，该工序的开始时间调整为机台中最早完成时间
+				var firstD = detail.Where(_ => _.IsPlan == false).OrderBy(_ => _.Start).First();//最前面的未排程工序
+				if (mList.Where(_ => firstD.Machines.Contains(_.Name)).Max(_ => _.Start) < firstD.Start)
+				{
+					firstD.Start = mList.Where(_ => firstD.Machines.Contains(_.Name)).Min(_ => _.Start);
+				}
+			}
+			return list;
+		}
+		//生成并保存生产排程
+		private void SaveSmallScheduling(IEnumerable<MachineInfo> planInfo)
+		{
+			foreach (var info in planInfo)
+			{
+				var small = new SmallScheduling
+				{
+					Mold = info.SchedulingInfo.Bom.MoldCode,
+					Date = info.Start,
+					Machine = info.Name,
+					CustomerCode = info.SchedulingInfo.Scheduling.CustomerCode,
+					PoCode = info.SchedulingInfo.Po.Code,
+					ProductCode = info.SchedulingInfo.Scheduling.ProductCode,
+					ProductName = info.SchedulingInfo.Scheduling.ProductName,
+					ProductSpec = info.SchedulingInfo.Scheduling.Spec,
+					ProductType = info.SchedulingInfo.Bom.ProductType,
+					Orders = info.SchedulingInfo.Po.OrderQuantity,
+					WorkOrders = info.SchedulingInfo.Po.WorkQuantity,
+					HasOrders = info.SchedulingInfo.Po.WorkQuantity,
+					PlanOrders = info.SchedulingInfo.Po.WorkQuantity,
+					Cavity = info.SchedulingInfo.Po.Cavity,
+					ProcessName = info.SchedulingInfo.ProcessName,
+					Capacity = info.SchedulingInfo.Process.Capacity,
+					DebugTime = info.SchedulingInfo.Process.Debug,
+					WorkTime = info.SchedulingInfo.WorkTimes,
+					Start = info.Start,
+					End = info.End,
+				};
+				UnitOfWork.GetRepository<IRepository<SmallScheduling>>().Add(small);
+			}
+			UnitOfWork.Commit();
+		}
+	}
+	public class SchedulingInfo
+	{
+		public Scheduling Scheduling { get; set; }
+		public Bom Bom { get; set; }
+		public Po Po { get; set; }
+		public BomProcess Process { get; set; }
+		public string ProcessName { get; set; }
+		public double WorkTimes { get; set; }
+		public DateTime Start { get; set; }
+		public DateTime End { get { return Start.AddHours(WorkTimes); } }
+		public string[] Machines { get; set; }
+		public SchedulingInfo Prev { get; set; }
+		public bool IsPlan { get; set; }
+	}
+
+	public class MachineInfo
+	{
+		public string Name { get; set; }
+		public SchedulingInfo SchedulingInfo { get; set; }
+		public DateTime Start { get; set; }
+		public DateTime End { get; set; }
+	}
+
+	public class MachineScheduling
+	{
+		public string Name { get; set; }
+		public DateTime Start { get; set; }
 	}
 }

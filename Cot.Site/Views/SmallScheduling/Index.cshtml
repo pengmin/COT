@@ -1,0 +1,39 @@
+﻿@using System.ComponentModel
+@using System.Reflection
+@using Cot.Entities
+@model IEnumerable<SmallScheduling>
+@{
+	ViewBag.Title = "生产排程";
+	var pros = new List<PropertyInfo>();
+}
+<div class="toolbar"><a href="/scheduling">返回交货排程</a></div>
+<table class="gridview">
+	<thead>
+		<tr>
+			@foreach (var pro in typeof(SmallScheduling).GetProperties())
+   {
+	   var attrs = pro.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+	   if (attrs.Any())
+	   {
+		   var attr = attrs.First() as DisplayNameAttribute;
+		   if (attr != null)
+		   {
+			   pros.Add(pro);
+				<th>@attr.DisplayName</th>
+		   }
+	   }
+   }
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+  {
+			<tr>
+				@foreach (var pro in pros)
+	{
+					<td>@pro.GetValue(item, null)</td>
+	}
+			</tr>
+  }
+	</tbody>
+</table>

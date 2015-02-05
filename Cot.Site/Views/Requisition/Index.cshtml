@@ -7,7 +7,7 @@
 	var pros = new List<PropertyInfo>();
 }
 <div class="toolbar">
-	<a href="javascript:$('form').submit();">删除</a>
+	<a href="javascript:del();">删除</a>
 </div>
 <form action="/requisition/del" method="POST">
 	<table class="gridview">
@@ -47,3 +47,10 @@
 		</tbody>
 	</table>
 </form>
+<script>
+	function del() {
+		if (confirm("确定删除？")) {
+			$('form').submit();
+		}
+	}
+</script>

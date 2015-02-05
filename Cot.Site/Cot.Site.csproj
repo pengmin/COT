@@ -138,6 +138,7 @@
     <Compile Include="Controllers\RawMaterialController.cs" />
     <Compile Include="Controllers\RequisitionController.cs" />
     <Compile Include="Controllers\SchedulingController.cs" />
+    <Compile Include="Controllers\SmallSchedulingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -177,6 +178,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Scheduling\Index.cshtml" />
     <Content Include="Views\Scheduling\Edit.cshtml" />
+    <Content Include="Views\SmallScheduling\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -224,7 +226,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>30200</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:34094/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

@@ -30,9 +30,16 @@
 					<td>@item.ProductSpec</td>
 					<td>@item.ProductType</td>
 					<td>@(item.ProductionLossRate * 100)%</td>
-					<td><a href="/bom/edit/@item.Id">编辑</a><a href="/bom/del/@item.Id">删除</a></td>
+					<td><a href="/bom/edit/@item.Id">编辑</a><a href="javascript:del(@item.Id);">删除</a></td>
 				</tr>
    }
 		</tbody>
 	</table>
 </form>
+<script>
+	function del(id) {
+		if (confirm("确定删除？")) {
+			window.href = '/bom/del/' + id;
+		}
+	}
+</script>

@@ -22,7 +22,7 @@
 		</table>
 	</div>
 </form>
-<div class="toolbar"><a href="/scheduling/add">新增</a><a href="javascript:run();">生产排程</a></div>
+<div class="toolbar"><a href="/scheduling/add">新增</a><a href="javascript:run();">生产排程</a><a href="/scheduling/clear">清理排程数据</a></div>
 <form method="POST">
 	<input type="hidden" value="@start" name="start"/>
 	<table class="gridview">
@@ -50,7 +50,7 @@
 				<tr>
 					<td><a href="/bom/scheduling/@item.Id">BOM</a><br />
 						<a href="/scheduling/edit/@item.Id">编辑</a><br />
-						<a href="scheduling/del/@item.Id">删除</a></td>
+						<a href="javascript:del(@item.Id);">删除</a></td>
 					<td>
 						<input type="checkbox" value="@item.Id" name="id"/></td>
 					<td>@item.CustomerName</td>
@@ -84,5 +84,10 @@
 		}
 		$("form").attr("action", "/scheduling/run");
 		$("form").submit();
+	}
+	function del(id) {
+		if (confirm("确定删除？")) {
+			window.href = '/scheduling/del/' + id;
+		}
 	}
 </script>

@@ -14,6 +14,7 @@ namespace Cot.Repositories
 		public DbSet<RawMaterial> RawMaterials { get; set; }
 		public DbSet<Scheduling> Schedulings { get; set; }
 		public DbSet<BomProcess> BomProcesses { get; set; }
+		public DbSet<SmallScheduling> SmallSchedulings { get; set; }
 
 		public CotDbContext() : base("Data Source=.;Initial Catalog=COT;Integrated Security=False;User ID=sa;Password=azsxdcfvgb;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False") { }
 		public CotDbContext(string connectionString) : base(connectionString) { }
